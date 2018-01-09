@@ -1,0 +1,30 @@
+
+desc 'rename_yml'
+task :rename_yml do
+  path = ENV["PATH"] || Dir.pwd
+  files = Dir["#{path}/**/*.yaml"]
+  files.each do |file|
+    FileUtils.mv( file, file.ext("yml"))
+  end
+end
+
+desc 'archive'
+task :archive do
+ path = ENV["PATH"] || Dir.pwd
+ exclude = ENV["EXCLUDE"] || "ALL"
+ files = Dir["#{path}/*"]
+   files.each do |file|
+     file_ext = file.split(".")
+       exl_ext = exclude.split(",").each do |x|
+         file_ext.each do |y|
+          if x != y
+             Rake::PackageTask.new(x) do |p|
+               p.need_tar_gz = true
+               p.p.package_files.include("path"+ /build/)
+             end
+           end
+         end
+     end
+   end
+end
+
